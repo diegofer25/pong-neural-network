@@ -5,8 +5,8 @@
   "scripts": {
     "start": "parcel src/index.html --port 4321",
     "build": "parcel build src/index.html --public-url ./",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "predeploy": "rm -rf dist",
+    "deploy": "npm run build && gh-pages -d dist"
   },
   "homepage": "https://diegofer25.github.io/pong-neural-network/",
   "keywords": [],
