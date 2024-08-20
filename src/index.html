@@ -4,7 +4,22 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pong Game</title>
-  <link rel="stylesheet" href="./style.css">
+  <style>
+    body {
+      margin: 0;
+      background-color: black;
+    }
+    canvas#chart {
+      position: absolute;
+      border: 1px solid white;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      height: 30vh;
+      display: none;
+    }
+  </style>
 </head>
 <body>
   <canvas id="chart"></canvas>

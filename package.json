@@ -1,23 +1,28 @@
 {
-  "name": "pong",
+  "name": "pong-neural-network",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "scripts": {
     "start": "parcel src/index.html --port 4321",
-    "build": "parcel build src/index.html"
+    "build": "parcel build src/index.html --public-url ./",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   },
+  "homepage": "https://diegofer25.github.io/pong-neural-network/",
   "keywords": [],
   "author": "",
-  "license": "MIT",
+  "license": "ISC",
   "devDependencies": {
     "@parcel/transformer-raw": "^2.12.0",
-    "@tensorflow/tfjs": "^4.20.0",
     "buffer": "^6.0.3",
-    "chart.js": "^4.4.3",
+    "gh-pages": "^5.0.0",
     "parcel": "^2.12.0",
-    "phaser": "^3.80.1",
     "process": "^0.11.10",
     "typescript": "^5.5.4"
+  },
+  "dependencies": {
+    "@tensorflow/tfjs": "^4.20.0",
+    "chart.js": "^4.4.3",
+    "phaser": "^3.80.1"
   }
 }
