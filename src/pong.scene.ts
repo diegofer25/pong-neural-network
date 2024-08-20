@@ -30,10 +30,13 @@ export class PongScene extends Phaser.Scene {
     private botNn: BotNeuralNetwork;
     private lossChart: LossChart;
 
+    private _autoPlay: boolean = false;
+
     constructor() {
         super('PongScene');
         this.botNn = new BotNeuralNetwork();
         this.lossChart = new LossChart(document.getElementById('chart') as HTMLCanvasElement);
+        this._autoPlay = location.search.includes('autoplay');
     }
 
     // Getters and setters to ensure properties are initialized before use
@@ -136,20 +139,23 @@ export class PongScene extends Phaser.Scene {
 
             // Gradually increase ball velocity over time
             this.increaseBallVelocity(0.5);
+
+            if (this._autoPlay) {
+                this.paddleRight.setX(this.ball.x); // Follow the ball with the player's paddle
+            }
         }
     }
 
     // Increase the ball's velocity gradually
     private increaseBallVelocity(acceleration: number) {
-        if (!this.ball.body) {
-            throw new Error('Ball not initialized');
+        const maxVelocity = this.screenHeight * 1.5; 
+    
+        if (this.ball.body) {
+            const velocityX = Phaser.Math.Clamp(this.ball.body.velocity.x + (this.ball.body.velocity.x > 0 ? acceleration * 5 : -acceleration * 5), -maxVelocity, maxVelocity);
+            const velocityY = Phaser.Math.Clamp(this.ball.body.velocity.y + (this.ball.body.velocity.y > 0 ? acceleration : -acceleration), -maxVelocity, maxVelocity);
+            this.ball.setVelocityX(velocityX);
+            this.ball.setVelocityY(velocityY);
         }
-
-        const isGoingDown = this.ball.body.velocity.y > 0;
-        this.ball.setVelocityY(this.ball.body.velocity.y + (isGoingDown ? acceleration : -acceleration));
-
-        const isGoingRight = this.ball.body.velocity.x > 0;
-        this.ball.setVelocityX(this.ball.body.velocity.x + (isGoingRight ? acceleration * 5 : -acceleration * 5));
     }
 
     // Control the bot's paddle using the neural network's predictions
@@ -174,11 +180,17 @@ export class PongScene extends Phaser.Scene {
         const outputIsPassingLeftWall = output > this.screenWidth - this.paddleLeft.displayWidth / 2;
 
         if (outputIsPassingRightWall) {
+            // Avoid the paddle from going out of bounds
             this.paddleLeft.setX(this.paddleLeft.displayWidth / 2);
         } else if (outputIsPassingLeftWall) {
+            // Avoid the paddle from going out of bounds
             this.paddleLeft.setX(this.screenWidth - this.paddleLeft.displayWidth / 2);
         } else {
-            this.paddleLeft.setX(output);
+            // Move the paddle based on the neural network's output but avoiding big displacements in the paddle position
+            const diff = output - this.paddleLeft.x;
+            const maxDisplacement = 10;
+            const displacement = Phaser.Math.Clamp(diff, -maxDisplacement, maxDisplacement);
+            this.paddleLeft.setX(this.paddleLeft.x + displacement);
         }
     }
 
@@ -250,16 +262,18 @@ export class PongScene extends Phaser.Scene {
             this.lossChart.showChart();
             this._lossChartLabelText = this.add.text(this.screenWidth / 2, this.screenHeight / 1.2, 'Clique para continuar', { fontSize: '30px' });
             this._lossChartLabelText.setOrigin(0.5);
-            
+
             // Hide training text and show chart with label
             this._trainingText.setVisible(false);
+
+            if (this._autoPlay) {
+                this.startGame();
+            }
         } else {
             this.startGame();
         }
 
         this.updateScore();
-
-
     }
 
     // Set up the score display
@@ -326,7 +340,9 @@ export class PongScene extends Phaser.Scene {
     // Set up input controls for paddle movement
     private setupInputControls() {
         this.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
-            this.movePaddles(pointer.x);
+            if (!this._isGameOver && !this._autoPlay) {
+                this.movePaddles(pointer.x);
+            }
         });
     }
 

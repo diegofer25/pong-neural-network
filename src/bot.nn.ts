@@ -62,6 +62,8 @@ export class BotNeuralNetwork {
         state.dispose();
         prediction.dispose();
 
+        console.log('Predicted:', Math.round(output), 'Actual:', Math.round(action));
+
         return output;
     }
 
