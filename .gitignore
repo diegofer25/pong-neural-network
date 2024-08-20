@@ -1,0 +1,27 @@
+# Node modules
+node_modules/
+
+# Parcel cache
+.cache/
+
+# Parcel dist folder
+dist/
+
+# TypeScript compiled files
+*.tsbuildinfo
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# MacOS specific files
+.DS_Store
+
+# Environment variables
+.env
+
+# IDE specific files (Optional)
+.idea/
+
+.parcel-cache/
