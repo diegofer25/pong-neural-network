@@ -200,7 +200,7 @@ export class PongScene extends Phaser.Scene {
     private startGame() {
         if (this._startText && this._fadedBackground) {
             this._startText.setVisible(false);
-            this._fadedBackground.setVisible(false);
+            this._fadedBackground.setVisible(false); 
         }
 
         this._isGameOver = false;
@@ -239,23 +239,27 @@ export class PongScene extends Phaser.Scene {
         // Show faded background
         this._fadedBackground?.setVisible(true);
 
-        // Display "Training model..." text
-        this._trainingText = this.add.text(this.screenWidth / 2, this.screenHeight / 2, 'Treinando a IA...', { fontSize: '32px' });
-        this._trainingText.setOrigin(0.5);
-
         if (!botWon) {
+            // Display "Training model..." text
+            this._trainingText = this.add.text(this.screenWidth / 2, this.screenHeight / 2, 'Treinando a IA...', { fontSize: '32px' });
+            this._trainingText.setOrigin(0.5);
+
             const result = await this.botNn.trainModel();
             this.lossChart.updateChart(result.history.loss[0] as number);
+            this._epochs++;
+            this.lossChart.showChart();
+            this._lossChartLabelText = this.add.text(this.screenWidth / 2, this.screenHeight / 1.2, 'Clique para continuar', { fontSize: '30px' });
+            this._lossChartLabelText.setOrigin(0.5);
+            
+            // Hide training text and show chart with label
+            this._trainingText.setVisible(false);
+        } else {
+            this.startGame();
         }
 
-        this._epochs++;
         this.updateScore();
 
-        // Hide training text and show chart with label
-        this._trainingText.setVisible(false);
-        this.lossChart.showChart();
-        this._lossChartLabelText = this.add.text(this.screenWidth / 2, this.screenHeight / 1.2, 'Clique para continuar', { fontSize: '30px' });
-        this._lossChartLabelText.setOrigin(0.5);
+
     }
 
     // Set up the score display
